@@ -3,22 +3,25 @@ package springapp.command;
 import springapp.domain.Client;
 
 /**
- * This command class is used to pass information back and force between the client and the server
+ * This command class is used to pass information back and force between the
+ * client and the server
  * 
  */
 public class ClientCommand {
-	
+
 	private Integer id;
 	private String name;
 	private String address;
 	private String phoneNumber;
 
 	/**
-	 * Creates a command object that has the initial values the same as the client passed in
+	 * Creates a command object that has the initial values the same as the client
+	 * passed in
+	 * 
 	 * @param client the client to initialize the command object with
 	 */
 	public ClientCommand(Client client) {
-		if(client != null) {
+		if (client != null) {
 			id = client.getId();
 			this.name = client.getName();
 			this.address = client.getAddress();
@@ -28,7 +31,9 @@ public class ClientCommand {
 
 	/**
 	 * Set the id of the client
-	 * @param id the client id, null if this client is not persisted to the database (ie a new client)
+	 * 
+	 * @param id the client id, null if this client is not persisted to the database
+	 *           (ie a new client)
 	 */
 	public void setId(Integer id) {
 		this.id = id;
@@ -36,6 +41,7 @@ public class ClientCommand {
 
 	/**
 	 * Set the name of the client
+	 * 
 	 * @param name the name of the client
 	 */
 	public void setName(String name) {
@@ -44,6 +50,7 @@ public class ClientCommand {
 
 	/**
 	 * Set the address of the client
+	 * 
 	 * @param address the client address
 	 */
 	public void setAddress(String address) {
@@ -52,6 +59,7 @@ public class ClientCommand {
 
 	/**
 	 * Set the phone number of the client
+	 * 
 	 * @param phoneNumber the phone number
 	 */
 	public void setPhoneNumber(String phoneNumber) {
@@ -59,7 +67,8 @@ public class ClientCommand {
 	}
 
 	/**
-	 * @return the client id, returns null if this client is new and not persisted to the database yet
+	 * @return the client id, returns null if this client is new and not persisted
+	 *         to the database yet
 	 */
 	public Integer getId() {
 		return id;
@@ -85,5 +94,5 @@ public class ClientCommand {
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
-  
+
 }

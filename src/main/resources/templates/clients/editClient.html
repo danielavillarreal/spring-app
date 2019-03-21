@@ -13,7 +13,7 @@
 					<a class="pure-button" data-th-href="@{/clients}">Cancel</a>
 					<a class="pure-button" data-th-if="${command.id != null}" data-th-href="@{/clients/{c}/delete(c=${command?.id})}">Delete</a>
 					<a class="pure-button" data-th-if="${command.id != null}" data-th-href="@{/pets/new?clientId={c}(c=${command?.id})}">Add Pet</a>
-
+					<a class="pure-button" data-th-if="${command.id != null}" data-th-href="@{/appointments/new?clientId={c}(c=${command?.id})}">Add Appointment</a>
 				</div>
 				<div class="pad">
 					<form class="pure-form pure-form-aligned" id="theForm" action="#" data-th-action="@{/clients}" data-th-object="${command}" method="post">
@@ -51,7 +51,7 @@
 							<table class="fullWidth pure-table pure-table-horizontal" >
 									<thead>
 										<tr>
-											<th>Pet Id</th>
+											<th>Pet ID</th>
 											<th>Name</th>
 											<th>Gender</th>
 										</tr>
@@ -69,6 +69,8 @@
 										</tr>
 									</tbody>
 								</table>
+								
+								
 				        	</div>
 				        </div>
 						
