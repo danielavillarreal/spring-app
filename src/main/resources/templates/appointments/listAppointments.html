@@ -15,18 +15,16 @@
 					<table class="fullWidth pure-table pure-table-horizontal">
 						<thead>
 							<tr>
-								<th>ID</th>
-								<th>Client Name</th>
-								<th>Start_Date</th>
-								<th>End_Date</th>
+								<th>Appointment ID</th>
+								<th>Date</th>
+								<th>Time</th>
 							</tr>
 						</thead>
 						<tbody>	
 							<tr data-th-each="appointment : ${appointments}">
 								<td> <a data-th-href="@{/appointments/{id}(id=${appointment.id})}" data-th-text="${appointment.id}">...</a></td>
-								<td data-th-text="${client.name}">...</td>
-								<td data-th-text="${appointment.start_date}">...</td>
-								<td data-th-text="${appointment.end_date}">...</td>
+								<td data-th-text="${appointment.date}">...</td>
+								<td data-th-text="${appointment.time}">...</td>
 							</tr>
 						</tbody>
 					</table>

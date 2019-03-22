@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -19,24 +21,24 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import springapp.domain.Appointment;
+import springapp.domain.Client;
 
 @Repository
 @Scope("singleton")
 public class AppointmentDao {
 	
 	private Logger logger = LoggerFactory.getLogger(AppointmentDao.class);
+	private DateTimeFormatter dateFormatter;
+	
+	public AppointmentDao() {
+		dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	}
 
 	RowMapper<Appointment> simpleAppointmentMapper = new RowMapper<Appointment>() {
 
 		@Override
 		public Appointment mapRow(ResultSet rs, int rowNum) throws SQLException {
-			java.sql.Date startDate = rs.getDate("start_date");
-			Appointment date = null;
-			if(startDate!= null) {
-				date = Appointment.valueOf(startDate);
-
-			}
-			return new Appointment(rs.getInt("id"), rs.getDate("start_date"), rs.getDate("end_date"), rs.getInt("client_id"));
+			return new Appointment(rs.getInt("id"), LocalDate.parse(rs.getString("date"), dateFormatter), rs.getString("time"), rs.getInt("client_id"));
 		}
 	};
 	
@@ -46,7 +48,7 @@ public class AppointmentDao {
     	
 	public List<Appointment> list(){
 		List<Appointment> queryResult = jdbcTemplate.query(
-				"SELECT id, start_date, end_date, client_id FROM appointments",
+				"SELECT id, date, time, client_id FROM appointments",
 				simpleAppointmentMapper);
 		
 		
@@ -55,7 +57,7 @@ public class AppointmentDao {
 	
 	public List<Appointment> listForClient(int clientId){
 		List<Appointment> queryResult = jdbcTemplate.query(
-				"SELECT id, start_date, end_date, client_id FROM appointments WHERE client_id = ?",
+				"SELECT id, date, time, client_id FROM appointments WHERE client_id = ?",
 				new Object[] {clientId},
 				simpleAppointmentMapper);
 		
@@ -65,7 +67,7 @@ public class AppointmentDao {
 	
 	public Appointment get(int id) {
 		List<Appointment> queryResult = jdbcTemplate.query(
-				"SELECT id, start_date, end_date, client_id FROM appointments WHERE id = ? LIMIT 1", 
+				"SELECT id, date, time, client_id FROM appointments WHERE id = ? LIMIT 1", 
 				new Object[] {id},
 				simpleAppointmentMapper);
 		
@@ -80,6 +82,7 @@ public class AppointmentDao {
 	
 	public Appointment save(Appointment appointment) {
 		Integer id = appointment.getId();
+		DateTimeFormatter dbDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		if(id == null) {
 			
 			KeyHolder holder = new GeneratedKeyHolder();
@@ -88,9 +91,9 @@ public class AppointmentDao {
 				
 				@Override
 				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-					PreparedStatement statement = con.prepareStatement("INSERT INTO appointment(start_date, end_date, client_id) VALUES (?, ?, ?)");
-					statement.setDate(1, appointment.getStartDate());
-					statement.setDate(2, appointment.getEndDate());
+					PreparedStatement statement = con.prepareStatement("INSERT INTO appointments(date, time, client_id) VALUES (?, ?, ?)");
+					statement.setString(1, appointment.getDate().format(dbDateFormatter));
+					statement.setString(2, appointment.getTime());
 					statement.setInt(3, appointment.getClientId());
 					return statement;
 
@@ -100,9 +103,9 @@ public class AppointmentDao {
 			id = holder.getKey().intValue();
 			
 		} else {
-			// notice that we do not update the client id since we do not want to enable pet transfer from this method
-			jdbcTemplate.update("UPDATE appointments SET start_date = ?, end_date = ? WHERE id = ?",
-					new Object[] {appointment.getStartDate(), appointment.getEndDate(), id});
+			
+			jdbcTemplate.update("UPDATE appointments SET date = ?, time = ? WHERE id = ?",
+					new Object[] {appointment.getDate(), appointment.getTime(), id});
 		}
 		
 		return get(id);

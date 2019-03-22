@@ -1,5 +1,7 @@
 package springapp.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,14 @@ import springapp.domain.Client;
 @Service
 public class AppointmentService {
 	
+	private DateTimeFormatter dateFormatter;
+	
 	@Autowired 
 	AppointmentDao appointmentDao;
+	
+	public AppointmentService() {
+		dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	}
 	
 	public List<Appointment> getAppointments(){
 		return appointmentDao.list();
@@ -30,7 +38,7 @@ public class AppointmentService {
 	}
 	
 	public Appointment saveAppointment(AppointmentCommand command) {
-		Appointment newAppointment = new Appointment(command.getId(), command.getStartDate(), command.getEndDate(), command.getClientId());
+		Appointment newAppointment = new Appointment(command.getId(), LocalDate.parse(command.getDate(), dateFormatter), command.getTime(), command.getClientId());
 		return appointmentDao.save(newAppointment);
 	}
 }

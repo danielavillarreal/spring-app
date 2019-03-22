@@ -21,55 +21,32 @@ import springapp.domain.Appointment;
 import springapp.service.ClientService;
 import springapp.service.AppointmentService;
 
-/**
- * Controller that handles the pets pages
- *
- * Notice the @PreAuthorized annotations on the methods.
- *
- * Each method either returned the name of the view template that will geneder the page,
- * or specifies a redirect to another page/path
- *
- * Each mothod, will also populate a model object if needed. The model is merged in with the view template
- */
+
 @Controller
 @RequestMapping("/appointments")
 public class AppointmentController {
 	
 	private Logger logger = LoggerFactory.getLogger(AppointmentController.class);
 
-	// injecting in a PetService instance
     @Autowired
 	AppointmentService appointmentService;
 
-    // injecting in a ClientService instance
 	@Autowired
 	ClientService clientService;
 
-    /**
-     * Handle listing all the pets
-     * @param model the model to populate, and merge in with the view template
-     * @return the view template for listing pets
-     */
+  
 	@PreAuthorize("hasAuthority('LIST_APPOINTMENTS')")
 	@GetMapping
-	 public String listAppointments(Model model) {
-	    // get the list of pets from the service
+	public String listAppointments(Model model) {
+	  
         List<Appointment> appointments = appointmentService.getAppointments();
 
-        // we add the pets to the model
-        // Note we are not adding the PetCommand instances, but Pet instances
+       
 		model.addAttribute("appointments", appointments);
         return "appointments/listAppointments";
     }
 
-    /**
-     * Get pet information and draw an edit page for single pet.
-     * Also used to draw a new pet page
-     * @param id the id of the pet we are editing, or new if this is for a new pet
-     * @param clientId if this is for a new pet, then the client id is required
-     * @param model the model that will be used when merging with the view template
-     * @return the edit pet view template
-     */
+
 	@PreAuthorize("hasAuthority('GET_APPOINTMENT')")
 	@GetMapping("/{id}")
 	public String getAppointment(@PathVariable("id") String id,
@@ -78,15 +55,11 @@ public class AppointmentController {
 						 @RequestParam(name="saved", required = false) boolean saved) {
 
 
-	    // we used this as flag so we can tell on the view template how we got here?
-        // if a client id wass passed in, then we got to this page from the client edit page.
-        // other wise we got here from the list pets page
-        // this information can be used to figure out what page we should exit to
 		model.addAttribute("fromClientPage", clientId != null);
         model.addAttribute("saved", saved);
 
 
-        // if the id passed in is 'new' and no clientId is passed in, then we have a problem ....
+      
 		if(id.equals("new") && clientId == null) {
 			throw new IllegalArgumentException("Cannot add a new appointment without a clientid");
 		}
@@ -94,48 +67,30 @@ public class AppointmentController {
 		AppointmentCommand appointmentCommand;
 
 		if(id.equals("new")) {
-            // if the id is 'new' then we create a pet command that only has the client id filled in
+           
 			appointmentCommand = new AppointmentCommand(clientId);
 			
 		} else {
-            // else we should get the pet command that is a copy of the pet
-            // so we get the pet from the service
+            
             Appointment appointment = appointmentService.getAppointment(id);
-            // and we generate our command from the pet instance the service returns
+          
 			appointmentCommand = new AppointmentCommand(appointment);
 		}
 
-		// the pet command should always have the clientid (unless the Pet instance from the service is missing an id)
-        // which we should probably handle....
-
-        // we get the client based on the client id in the command
 		Client client = clientService.getClient(appointmentCommand.getClientId());
 
-		// we set the client instance in the pet command,
-        // when we got the command earlier, we only had the clientid, but now we should have the full client object.
-        // we do this because we want to display the client info (name) not just the id.
 		appointmentCommand.setClient(client);			
 
-		// we add the command pet command instance to the mode (which has the client instance as well as the pet info)
 		model.addAttribute("command", appointmentCommand);
 		return "appointments/editAppointment";
 	}
 
 
-    /**
-     * Save the pet info, or create a new pet based on the command
-     * @param command the command to get the pet info from
-     * @param redirectAttributes used to pass attributes to the get page after saving a pet
-     * @param fromClientPage a flag so we know if this originated from the client page, or the pet list page
-     * @return the view template to use once the save is successful
-     */
 	@PreAuthorize("hasAuthority('SAVE_APPOINTMENT')")
 	@PostMapping
-	 public String savePet(AppointmentCommand command, RedirectAttributes redirectAttributes, boolean fromClientPage) {
+	 public String saveAppointment(AppointmentCommand command, RedirectAttributes redirectAttributes, boolean fromClientPage) {
 
-        // we pass in the pet command to the service to update or create a new pet
         Appointment appointment = appointmentService.saveAppointment(command);
-
 
         redirectAttributes.addAttribute("saved", true);
         if(fromClientPage) {
@@ -145,31 +100,19 @@ public class AppointmentController {
 
     }
 
-    /**
-     * Delete a pet and redirect to either the pet listing page, or the client edit page
-     * @param id the if of the pet
-     * @param clientId an optional client id of the pet
-     * @param redirectAttributes additional attributes to pass along to the page we redirect to
-     * @return the path of the page we redirect to once the delete is done
-     */
 	@PreAuthorize("hasAuthority('DELETE_APPOINTMENT')")
 	@GetMapping("/{id}/delete")
-	public String deletePet(@PathVariable("id") String id,
+	public String deleteAppointment(@PathVariable("id") String id,
 							@RequestParam(name="clientId", required=false) Integer clientId,
 							RedirectAttributes redirectAttributes) {
 
-	    // we pass the pet id to the service so it can delete the pet
 		appointmentService.deleteAppointment(id);
 
-		// a flag so the page we redirect to can tell that the delete was successful
 		redirectAttributes.addFlashAttribute("deleted", true);
 
 		if(clientId != null){
-            // if a client id was passed in, then we redirect to the client edit page
 			return "redirect:/clients/"+clientId;
 		}
-
-		// otherwise we redirect to the appointmentslisting page
 		return "redirect:/appointments";
 
 	}

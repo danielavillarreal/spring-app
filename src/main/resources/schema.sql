@@ -23,4 +23,12 @@ create table users (
 	role varchar(255)
 );
 
+CREATE TABLE appointments ( 
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	start_date varchar(255), 
+	end_date varchar(255), 
+	client_id integer, 
+	FOREIGN KEY(client_id) REFERENCES clients(id) 
+);
+
 insert into users values (null, 'admin', 'password', 'SUPER_ADMIN');

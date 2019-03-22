@@ -75,6 +75,8 @@ public class ClientController {
 			// we get the list of pets, and send those as is since we dont need a command to carry changes to the pets
             // from this page
 			model.addAttribute("pets", clientService.getPets(client.getId()) );
+			
+			model.addAttribute("appointments", clientService.getAppointments(client.getId()) );
 		}
 		return "clients/editClient";
 	}

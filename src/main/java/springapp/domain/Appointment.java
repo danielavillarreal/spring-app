@@ -1,17 +1,17 @@
 package springapp.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Appointment {
 	private final Integer id;
-	private final java.sql.Date start_date;
-	private final java.sql.Date end_date;
+	private final LocalDate date;
+	private final String time;
 	private final Integer clientId;
 	
-	public Appointment(Integer id, java.sql.Date start_date, java.sql.Date end_date, Integer clientId ){
+	public Appointment(Integer id, LocalDate date, String time, Integer clientId ){
 		this.id = id;
-		this.start_date = start_date;
-		this.end_date = end_date;
+		this.date = date;
+		this.time = time;
 		this.clientId = clientId;
 	}
 	
@@ -19,21 +19,16 @@ public class Appointment {
 		return id;
 	}
 
-	public java.sql.Date getStartDate() {
-		return start_date;
+	public LocalDate getDate() {
+		return date;
 	}
 	
-	public java.sql.Date getEndDate() {
-		return end_date;
+	public String getTime() {
+		return time;
 	}
 	
 	public Integer getClientId() {
 		return clientId;
-	}
-
-	public static Appointment valueOf(java.sql.Date startDate) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 

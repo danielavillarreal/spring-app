@@ -2,20 +2,23 @@ package springapp.command;
 
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 import springapp.domain.Appointment;
 import springapp.domain.Client;
 
-/**
- * This command class is used to pass information back and force between the client and the server
- * 
- */
+
 public class AppointmentCommand {
 	
 	private Integer id;
-	private java.sql.Date start_date;
-	private java.sql.Date end_date;
+	private String date;
+	private String time;
 	private Integer clientId;
 	private Client client;
+	private DateTimeFormatter dateFormatter;
+	
 	
 	public AppointmentCommand(Integer clientId) {
 		this.clientId = clientId;
@@ -25,9 +28,13 @@ public class AppointmentCommand {
 		if (appointment != null) {
 			this.clientId = appointment.getClientId();
 			this.id = appointment.getId();
-			this.start_date = appointment.getStartDate();
-			this.end_date = appointment.getEndDate();
+			this.date = appointment.getDate().format(dateFormatter);
+			this.time = appointment.getTime();
 		}
+	}
+	
+	public AppointmentCommand() {
+		dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 	}
 	
 	public Integer getId() {
@@ -38,20 +45,20 @@ public class AppointmentCommand {
 		this.id = id;
 	}
 	
-	public java.sql.Date getStartDate() {
-		return start_date;
+	public String getDate() {
+		return date;
 	}
 	
-	public void setStartDate(java.sql.Date start_date) {
-		this.start_date = start_date;
+	public void setDate(String date) {
+		this.date = date;
 	}
 	
-	public java.sql.Date getEndDate() {
-		return end_date;
+	public String getTime() {
+		return time;
 	}
 	
-	public void setEndDate(java.sql.Date end_date) {
-		this.end_date = end_date;
+	public void setTime(String time) {
+		this.time = time;
 	}
 	
 	public Client getClient() {
